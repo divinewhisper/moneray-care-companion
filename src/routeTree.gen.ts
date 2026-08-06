@@ -13,8 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedMedicationsRouteImport } from './routes/_authenticated/medications'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedHealthCategoryRouteImport } from './routes/_authenticated/health.$category'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -35,6 +37,12 @@ const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedMedicationsRoute =
+  AuthenticatedMedicationsRouteImport.update({
+    id: '/medications',
+    path: '/medications',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   id: '/onboarding',
   path: '/onboarding',
@@ -45,20 +53,30 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedHealthCategoryRoute =
+  AuthenticatedHealthCategoryRouteImport.update({
+    id: '/health/$category',
+    path: '/health/$category',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AuthenticatedAccountRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/medications': typeof AuthenticatedMedicationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/api/chat': typeof ApiChatRoute
+  '/health/$category': typeof AuthenticatedHealthCategoryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AuthenticatedAccountRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/medications': typeof AuthenticatedMedicationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/api/chat': typeof ApiChatRoute
+  '/health/$category': typeof AuthenticatedHealthCategoryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -66,22 +84,40 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/_authenticated/medications': typeof AuthenticatedMedicationsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/api/chat': typeof ApiChatRoute
+  '/_authenticated/health/$category': typeof AuthenticatedHealthCategoryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/account' | '/home' | '/onboarding' | '/api/chat'
+  fullPaths:
+    | '/'
+    | '/account'
+    | '/home'
+    | '/medications'
+    | '/onboarding'
+    | '/api/chat'
+    | '/health/$category'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/account' | '/home' | '/onboarding' | '/api/chat'
+  to:
+    | '/'
+    | '/account'
+    | '/home'
+    | '/medications'
+    | '/onboarding'
+    | '/api/chat'
+    | '/health/$category'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/_authenticated/account'
     | '/_authenticated/home'
+    | '/_authenticated/medications'
     | '/_authenticated/onboarding'
     | '/api/chat'
+    | '/_authenticated/health/$category'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -120,6 +156,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/medications': {
+      id: '/_authenticated/medications'
+      path: '/medications'
+      fullPath: '/medications'
+      preLoaderRoute: typeof AuthenticatedMedicationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/onboarding': {
       id: '/_authenticated/onboarding'
       path: '/onboarding'
@@ -134,19 +177,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/health/$category': {
+      id: '/_authenticated/health/$category'
+      path: '/health/$category'
+      fullPath: '/health/$category'
+      preLoaderRoute: typeof AuthenticatedHealthCategoryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedMedicationsRoute: typeof AuthenticatedMedicationsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
+  AuthenticatedHealthCategoryRoute: typeof AuthenticatedHealthCategoryRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+  AuthenticatedMedicationsRoute: AuthenticatedMedicationsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
+  AuthenticatedHealthCategoryRoute: AuthenticatedHealthCategoryRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
