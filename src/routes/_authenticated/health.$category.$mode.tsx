@@ -5,7 +5,16 @@ import { toast } from "sonner";
 
 import { PhoneShell, ZoneHeader } from "@/components/moneray/PhoneShell";
 import { supabase } from "@/integrations/supabase/client";
-import { categoryLabel, isCategory, isMode, modeLabel, thaiDateTime, zoneFor } from "@/lib/moneray";
+import {
+  categoryLabel,
+  isCategory,
+  isMode,
+  modeLabel,
+  thaiDateTime,
+  zoneFor,
+  type Category,
+  type Mode,
+} from "@/lib/moneray";
 
 export const Route = createFileRoute("/_authenticated/health/$category/$mode")({
   component: ModePage,
