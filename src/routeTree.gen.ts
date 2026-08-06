@@ -15,8 +15,11 @@ import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedMedicationsRouteImport } from './routes/_authenticated/medications'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
+import { Route as AuthenticatedPrescriptionsRouteImport } from './routes/_authenticated/prescriptions'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as AuthenticatedChatThreadIdRouteImport } from './routes/_authenticated/chat.$threadId'
 import { Route as AuthenticatedHealthCategoryRouteImport } from './routes/_authenticated/health.$category'
+import { Route as AuthenticatedHealthCategoryModeRouteImport } from './routes/_authenticated/health.$category.$mode'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -48,16 +51,34 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPrescriptionsRoute =
+  AuthenticatedPrescriptionsRouteImport.update({
+    id: '/prescriptions',
+    path: '/prescriptions',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedChatThreadIdRoute =
+  AuthenticatedChatThreadIdRouteImport.update({
+    id: '/chat/$threadId',
+    path: '/chat/$threadId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedHealthCategoryRoute =
   AuthenticatedHealthCategoryRouteImport.update({
     id: '/health/$category',
     path: '/health/$category',
     getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedHealthCategoryModeRoute =
+  AuthenticatedHealthCategoryModeRouteImport.update({
+    id: '/$mode',
+    path: '/$mode',
+    getParentRoute: () => AuthenticatedHealthCategoryRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -66,8 +87,11 @@ export interface FileRoutesByFullPath {
   '/home': typeof AuthenticatedHomeRoute
   '/medications': typeof AuthenticatedMedicationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/prescriptions': typeof AuthenticatedPrescriptionsRoute
   '/api/chat': typeof ApiChatRoute
-  '/health/$category': typeof AuthenticatedHealthCategoryRoute
+  '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/health/$category': typeof AuthenticatedHealthCategoryRouteWithChildren
+  '/health/$category/$mode': typeof AuthenticatedHealthCategoryModeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,8 +99,11 @@ export interface FileRoutesByTo {
   '/home': typeof AuthenticatedHomeRoute
   '/medications': typeof AuthenticatedMedicationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
+  '/prescriptions': typeof AuthenticatedPrescriptionsRoute
   '/api/chat': typeof ApiChatRoute
-  '/health/$category': typeof AuthenticatedHealthCategoryRoute
+  '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/health/$category': typeof AuthenticatedHealthCategoryRouteWithChildren
+  '/health/$category/$mode': typeof AuthenticatedHealthCategoryModeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,8 +113,11 @@ export interface FileRoutesById {
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/medications': typeof AuthenticatedMedicationsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
+  '/_authenticated/prescriptions': typeof AuthenticatedPrescriptionsRoute
   '/api/chat': typeof ApiChatRoute
-  '/_authenticated/health/$category': typeof AuthenticatedHealthCategoryRoute
+  '/_authenticated/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/_authenticated/health/$category': typeof AuthenticatedHealthCategoryRouteWithChildren
+  '/_authenticated/health/$category/$mode': typeof AuthenticatedHealthCategoryModeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,8 +127,11 @@ export interface FileRouteTypes {
     | '/home'
     | '/medications'
     | '/onboarding'
+    | '/prescriptions'
     | '/api/chat'
+    | '/chat/$threadId'
     | '/health/$category'
+    | '/health/$category/$mode'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,8 +139,11 @@ export interface FileRouteTypes {
     | '/home'
     | '/medications'
     | '/onboarding'
+    | '/prescriptions'
     | '/api/chat'
+    | '/chat/$threadId'
     | '/health/$category'
+    | '/health/$category/$mode'
   id:
     | '__root__'
     | '/'
@@ -116,8 +152,11 @@ export interface FileRouteTypes {
     | '/_authenticated/home'
     | '/_authenticated/medications'
     | '/_authenticated/onboarding'
+    | '/_authenticated/prescriptions'
     | '/api/chat'
+    | '/_authenticated/chat/$threadId'
     | '/_authenticated/health/$category'
+    | '/_authenticated/health/$category/$mode'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -170,12 +209,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/prescriptions': {
+      id: '/_authenticated/prescriptions'
+      path: '/prescriptions'
+      fullPath: '/prescriptions'
+      preLoaderRoute: typeof AuthenticatedPrescriptionsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
       fullPath: '/api/chat'
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/chat/$threadId': {
+      id: '/_authenticated/chat/$threadId'
+      path: '/chat/$threadId'
+      fullPath: '/chat/$threadId'
+      preLoaderRoute: typeof AuthenticatedChatThreadIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/health/$category': {
       id: '/_authenticated/health/$category'
@@ -184,15 +237,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHealthCategoryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/health/$category/$mode': {
+      id: '/_authenticated/health/$category/$mode'
+      path: '/$mode'
+      fullPath: '/health/$category/$mode'
+      preLoaderRoute: typeof AuthenticatedHealthCategoryModeRouteImport
+      parentRoute: typeof AuthenticatedHealthCategoryRoute
+    }
   }
 }
+
+interface AuthenticatedHealthCategoryRouteChildren {
+  AuthenticatedHealthCategoryModeRoute: typeof AuthenticatedHealthCategoryModeRoute
+}
+
+const AuthenticatedHealthCategoryRouteChildren: AuthenticatedHealthCategoryRouteChildren =
+  {
+    AuthenticatedHealthCategoryModeRoute: AuthenticatedHealthCategoryModeRoute,
+  }
+
+const AuthenticatedHealthCategoryRouteWithChildren =
+  AuthenticatedHealthCategoryRoute._addFileChildren(
+    AuthenticatedHealthCategoryRouteChildren,
+  )
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedMedicationsRoute: typeof AuthenticatedMedicationsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
-  AuthenticatedHealthCategoryRoute: typeof AuthenticatedHealthCategoryRoute
+  AuthenticatedPrescriptionsRoute: typeof AuthenticatedPrescriptionsRoute
+  AuthenticatedChatThreadIdRoute: typeof AuthenticatedChatThreadIdRoute
+  AuthenticatedHealthCategoryRoute: typeof AuthenticatedHealthCategoryRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -200,7 +276,10 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedMedicationsRoute: AuthenticatedMedicationsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
-  AuthenticatedHealthCategoryRoute: AuthenticatedHealthCategoryRoute,
+  AuthenticatedPrescriptionsRoute: AuthenticatedPrescriptionsRoute,
+  AuthenticatedChatThreadIdRoute: AuthenticatedChatThreadIdRoute,
+  AuthenticatedHealthCategoryRoute:
+    AuthenticatedHealthCategoryRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =
