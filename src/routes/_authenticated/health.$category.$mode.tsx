@@ -12,8 +12,11 @@ export const Route = createFileRoute("/_authenticated/health/$category/$mode")({
 });
 
 function ModePage() {
-  const { category, mode } = Route.useParams();
+  const params = Route.useParams();
+  const category: string = params.category;
+  const mode: string = params.mode;
   if (!isCategory(category) || !isMode(mode)) throw notFound();
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
