@@ -57,12 +57,14 @@ function AccountPage() {
 
   async function toggle(field: "show_name" | "show_contact") {
     if (!profile) return;
-    await supabase
-      .from("profiles")
-      .update({ [field]: !profile[field] })
-      .eq("id", profile.id);
+    const patch =
+      field === "show_name"
+        ? { show_name: !profile.show_name }
+        : { show_contact: !profile.show_contact };
+    await supabase.from("profiles").update(patch).eq("id", profile.id);
     await queryClient.invalidateQueries({ queryKey: ["profile"] });
   }
+
 
   async function signOut() {
     await queryClient.cancelQueries();
