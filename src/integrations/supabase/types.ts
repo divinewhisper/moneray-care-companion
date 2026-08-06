@@ -14,7 +14,248 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      appointments: {
+        Row: {
+          created_at: string
+          doctor_name: string
+          id: string
+          location: string
+          scheduled_at: string
+          specialty: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          doctor_name: string
+          id?: string
+          location?: string
+          scheduled_at: string
+          specialty?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          doctor_name?: string
+          id?: string
+          location?: string
+          scheduled_at?: string
+          specialty?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      conversations: {
+        Row: {
+          category: string
+          channel: string
+          created_at: string
+          id: string
+          mode: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          channel?: string
+          created_at?: string
+          id?: string
+          mode: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          channel?: string
+          created_at?: string
+          id?: string
+          mode?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      medications: {
+        Row: {
+          created_at: string
+          dose: string
+          id: string
+          kind: string
+          name: string
+          note: string
+          times: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          dose?: string
+          id?: string
+          kind?: string
+          name: string
+          note?: string
+          times?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          dose?: string
+          id?: string
+          kind?: string
+          name?: string
+          note?: string
+          times?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prescriptions: {
+        Row: {
+          code: string
+          created_at: string
+          doctor_name: string
+          hospital: string
+          id: string
+          issued_at: string
+          items: Json
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          doctor_name?: string
+          hospital?: string
+          id?: string
+          issued_at?: string
+          items?: Json
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          doctor_name?: string
+          hospital?: string
+          id?: string
+          issued_at?: string
+          items?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          address: string
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          onboarded: boolean
+          phone: string
+          show_contact: boolean
+          show_name: boolean
+          updated_at: string
+        }
+        Insert: {
+          address?: string
+          created_at?: string
+          email?: string
+          first_name?: string
+          id: string
+          last_name?: string
+          onboarded?: boolean
+          phone?: string
+          show_contact?: boolean
+          show_name?: boolean
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          onboarded?: boolean
+          phone?: string
+          show_contact?: boolean
+          show_name?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      shipments: {
+        Row: {
+          carrier: string
+          created_at: string
+          eta: string | null
+          id: string
+          item_summary: string
+          status: string
+          tracking_number: string
+          user_id: string
+        }
+        Insert: {
+          carrier?: string
+          created_at?: string
+          eta?: string | null
+          id?: string
+          item_summary?: string
+          status?: string
+          tracking_number: string
+          user_id: string
+        }
+        Update: {
+          carrier?: string
+          created_at?: string
+          eta?: string | null
+          id?: string
+          item_summary?: string
+          status?: string
+          tracking_number?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
