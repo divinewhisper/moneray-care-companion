@@ -19,6 +19,7 @@ import { Route as AuthenticatedPrescriptionsRouteImport } from './routes/_authen
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedChatThreadIdRouteImport } from './routes/_authenticated/chat.$threadId'
 import { Route as AuthenticatedHealthCategoryRouteImport } from './routes/_authenticated/health.$category'
+import { Route as AuthenticatedHealthCategoryIndexRouteImport } from './routes/_authenticated/health.$category.index'
 import { Route as AuthenticatedHealthCategoryModeRouteImport } from './routes/_authenticated/health.$category.$mode'
 
 const IndexRoute = IndexRouteImport.update({
@@ -74,6 +75,12 @@ const AuthenticatedHealthCategoryRoute =
     path: '/health/$category',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedHealthCategoryIndexRoute =
+  AuthenticatedHealthCategoryIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedHealthCategoryRoute,
+  } as any)
 const AuthenticatedHealthCategoryModeRoute =
   AuthenticatedHealthCategoryModeRouteImport.update({
     id: '/$mode',
@@ -92,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
   '/health/$category': typeof AuthenticatedHealthCategoryRouteWithChildren
   '/health/$category/$mode': typeof AuthenticatedHealthCategoryModeRoute
+  '/health/$category/': typeof AuthenticatedHealthCategoryIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -102,8 +110,8 @@ export interface FileRoutesByTo {
   '/prescriptions': typeof AuthenticatedPrescriptionsRoute
   '/api/chat': typeof ApiChatRoute
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
-  '/health/$category': typeof AuthenticatedHealthCategoryRouteWithChildren
   '/health/$category/$mode': typeof AuthenticatedHealthCategoryModeRoute
+  '/health/$category': typeof AuthenticatedHealthCategoryIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/_authenticated/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
   '/_authenticated/health/$category': typeof AuthenticatedHealthCategoryRouteWithChildren
   '/_authenticated/health/$category/$mode': typeof AuthenticatedHealthCategoryModeRoute
+  '/_authenticated/health/$category/': typeof AuthenticatedHealthCategoryIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -132,6 +141,7 @@ export interface FileRouteTypes {
     | '/chat/$threadId'
     | '/health/$category'
     | '/health/$category/$mode'
+    | '/health/$category/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -142,8 +152,8 @@ export interface FileRouteTypes {
     | '/prescriptions'
     | '/api/chat'
     | '/chat/$threadId'
-    | '/health/$category'
     | '/health/$category/$mode'
+    | '/health/$category'
   id:
     | '__root__'
     | '/'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/_authenticated/chat/$threadId'
     | '/_authenticated/health/$category'
     | '/_authenticated/health/$category/$mode'
+    | '/_authenticated/health/$category/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -237,6 +248,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHealthCategoryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/health/$category/': {
+      id: '/_authenticated/health/$category/'
+      path: '/'
+      fullPath: '/health/$category/'
+      preLoaderRoute: typeof AuthenticatedHealthCategoryIndexRouteImport
+      parentRoute: typeof AuthenticatedHealthCategoryRoute
+    }
     '/_authenticated/health/$category/$mode': {
       id: '/_authenticated/health/$category/$mode'
       path: '/$mode'
@@ -249,11 +267,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedHealthCategoryRouteChildren {
   AuthenticatedHealthCategoryModeRoute: typeof AuthenticatedHealthCategoryModeRoute
+  AuthenticatedHealthCategoryIndexRoute: typeof AuthenticatedHealthCategoryIndexRoute
 }
 
 const AuthenticatedHealthCategoryRouteChildren: AuthenticatedHealthCategoryRouteChildren =
   {
     AuthenticatedHealthCategoryModeRoute: AuthenticatedHealthCategoryModeRoute,
+    AuthenticatedHealthCategoryIndexRoute:
+      AuthenticatedHealthCategoryIndexRoute,
   }
 
 const AuthenticatedHealthCategoryRouteWithChildren =
@@ -293,13 +314,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
