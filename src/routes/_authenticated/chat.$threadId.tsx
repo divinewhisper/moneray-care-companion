@@ -125,9 +125,9 @@ function ChatPage() {
   }
 
   return (
-    <PhoneShell className={zoneFor(category, mode)}>
-      <div className="flex h-screen flex-col">
-        <header className="bg-[var(--zone)] px-4 pt-5 pb-4 text-[var(--zone-foreground)]">
+    <PhoneShell fullHeight className={zoneFor(category, mode)}>
+      <div className="flex h-full min-h-0 flex-col">
+        <header className="shrink-0 bg-[var(--zone)] px-4 pt-5 pb-4 text-[var(--zone-foreground)]">
           <div className="flex items-start justify-between gap-3">
             <Link
               to="/health/$category/$mode"
