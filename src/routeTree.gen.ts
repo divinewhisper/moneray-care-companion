@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as DoctorRouteImport } from './routes/doctor'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedMedicationsRouteImport } from './routes/_authenticated/medications'
@@ -18,6 +19,8 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPrescriptionsRouteImport } from './routes/_authenticated/prescriptions'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedChatThreadIdRouteImport } from './routes/_authenticated/chat.$threadId'
+import { Route as AuthenticatedDoctorDashboardRouteImport } from './routes/_authenticated/doctor.dashboard'
+import { Route as AuthenticatedDoctorRegisterRouteImport } from './routes/_authenticated/doctor.register'
 import { Route as AuthenticatedHealthCategoryRouteImport } from './routes/_authenticated/health.$category'
 import { Route as AuthenticatedHealthCategoryIndexRouteImport } from './routes/_authenticated/health.$category.index'
 import { Route as AuthenticatedHealthCategoryModeRouteImport } from './routes/_authenticated/health.$category.$mode'
@@ -29,6 +32,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DoctorRoute = DoctorRouteImport.update({
+  id: '/doctor',
+  path: '/doctor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
@@ -69,6 +77,18 @@ const AuthenticatedChatThreadIdRoute =
     path: '/chat/$threadId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedDoctorDashboardRoute =
+  AuthenticatedDoctorDashboardRouteImport.update({
+    id: '/doctor/dashboard',
+    path: '/doctor/dashboard',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDoctorRegisterRoute =
+  AuthenticatedDoctorRegisterRouteImport.update({
+    id: '/doctor/register',
+    path: '/doctor/register',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedHealthCategoryRoute =
   AuthenticatedHealthCategoryRouteImport.update({
     id: '/health/$category',
@@ -90,6 +110,7 @@ const AuthenticatedHealthCategoryModeRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/doctor': typeof DoctorRoute
   '/account': typeof AuthenticatedAccountRoute
   '/home': typeof AuthenticatedHomeRoute
   '/medications': typeof AuthenticatedMedicationsRoute
@@ -97,12 +118,15 @@ export interface FileRoutesByFullPath {
   '/prescriptions': typeof AuthenticatedPrescriptionsRoute
   '/api/chat': typeof ApiChatRoute
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/doctor/dashboard': typeof AuthenticatedDoctorDashboardRoute
+  '/doctor/register': typeof AuthenticatedDoctorRegisterRoute
   '/health/$category': typeof AuthenticatedHealthCategoryRouteWithChildren
   '/health/$category/$mode': typeof AuthenticatedHealthCategoryModeRoute
   '/health/$category/': typeof AuthenticatedHealthCategoryIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/doctor': typeof DoctorRoute
   '/account': typeof AuthenticatedAccountRoute
   '/home': typeof AuthenticatedHomeRoute
   '/medications': typeof AuthenticatedMedicationsRoute
@@ -110,6 +134,8 @@ export interface FileRoutesByTo {
   '/prescriptions': typeof AuthenticatedPrescriptionsRoute
   '/api/chat': typeof ApiChatRoute
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/doctor/dashboard': typeof AuthenticatedDoctorDashboardRoute
+  '/doctor/register': typeof AuthenticatedDoctorRegisterRoute
   '/health/$category/$mode': typeof AuthenticatedHealthCategoryModeRoute
   '/health/$category': typeof AuthenticatedHealthCategoryIndexRoute
 }
@@ -117,6 +143,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/doctor': typeof DoctorRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/medications': typeof AuthenticatedMedicationsRoute
@@ -124,6 +151,8 @@ export interface FileRoutesById {
   '/_authenticated/prescriptions': typeof AuthenticatedPrescriptionsRoute
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
+  '/_authenticated/doctor/dashboard': typeof AuthenticatedDoctorDashboardRoute
+  '/_authenticated/doctor/register': typeof AuthenticatedDoctorRegisterRoute
   '/_authenticated/health/$category': typeof AuthenticatedHealthCategoryRouteWithChildren
   '/_authenticated/health/$category/$mode': typeof AuthenticatedHealthCategoryModeRoute
   '/_authenticated/health/$category/': typeof AuthenticatedHealthCategoryIndexRoute
@@ -132,6 +161,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/doctor'
     | '/account'
     | '/home'
     | '/medications'
@@ -139,12 +169,15 @@ export interface FileRouteTypes {
     | '/prescriptions'
     | '/api/chat'
     | '/chat/$threadId'
+    | '/doctor/dashboard'
+    | '/doctor/register'
     | '/health/$category'
     | '/health/$category/$mode'
     | '/health/$category/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/doctor'
     | '/account'
     | '/home'
     | '/medications'
@@ -152,12 +185,15 @@ export interface FileRouteTypes {
     | '/prescriptions'
     | '/api/chat'
     | '/chat/$threadId'
+    | '/doctor/dashboard'
+    | '/doctor/register'
     | '/health/$category/$mode'
     | '/health/$category'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/doctor'
     | '/_authenticated/account'
     | '/_authenticated/home'
     | '/_authenticated/medications'
@@ -165,6 +201,8 @@ export interface FileRouteTypes {
     | '/_authenticated/prescriptions'
     | '/api/chat'
     | '/_authenticated/chat/$threadId'
+    | '/_authenticated/doctor/dashboard'
+    | '/_authenticated/doctor/register'
     | '/_authenticated/health/$category'
     | '/_authenticated/health/$category/$mode'
     | '/_authenticated/health/$category/'
@@ -173,6 +211,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  DoctorRoute: typeof DoctorRoute
   ApiChatRoute: typeof ApiChatRoute
 }
 
@@ -190,6 +229,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/doctor': {
+      id: '/doctor'
+      path: '/doctor'
+      fullPath: '/doctor'
+      preLoaderRoute: typeof DoctorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/account': {
@@ -241,6 +287,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedChatThreadIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/doctor/dashboard': {
+      id: '/_authenticated/doctor/dashboard'
+      path: '/doctor/dashboard'
+      fullPath: '/doctor/dashboard'
+      preLoaderRoute: typeof AuthenticatedDoctorDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/doctor/register': {
+      id: '/_authenticated/doctor/register'
+      path: '/doctor/register'
+      fullPath: '/doctor/register'
+      preLoaderRoute: typeof AuthenticatedDoctorRegisterRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/health/$category': {
       id: '/_authenticated/health/$category'
       path: '/health/$category'
@@ -289,6 +349,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedPrescriptionsRoute: typeof AuthenticatedPrescriptionsRoute
   AuthenticatedChatThreadIdRoute: typeof AuthenticatedChatThreadIdRoute
+  AuthenticatedDoctorDashboardRoute: typeof AuthenticatedDoctorDashboardRoute
+  AuthenticatedDoctorRegisterRoute: typeof AuthenticatedDoctorRegisterRoute
   AuthenticatedHealthCategoryRoute: typeof AuthenticatedHealthCategoryRouteWithChildren
 }
 
@@ -299,6 +361,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedPrescriptionsRoute: AuthenticatedPrescriptionsRoute,
   AuthenticatedChatThreadIdRoute: AuthenticatedChatThreadIdRoute,
+  AuthenticatedDoctorDashboardRoute: AuthenticatedDoctorDashboardRoute,
+  AuthenticatedDoctorRegisterRoute: AuthenticatedDoctorRegisterRoute,
   AuthenticatedHealthCategoryRoute:
     AuthenticatedHealthCategoryRouteWithChildren,
 }
@@ -309,6 +373,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  DoctorRoute: DoctorRoute,
   ApiChatRoute: ApiChatRoute,
 }
 export const routeTree = rootRouteImport
