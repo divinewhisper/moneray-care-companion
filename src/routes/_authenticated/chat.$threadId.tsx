@@ -125,9 +125,9 @@ function ChatPage() {
   }
 
   return (
-    <PhoneShell className={zoneFor(category, mode)}>
-      <div className="flex h-screen flex-col">
-        <header className="bg-[var(--zone)] px-4 pt-5 pb-4 text-[var(--zone-foreground)]">
+    <PhoneShell fullHeight className={zoneFor(category, mode)}>
+      <div className="flex h-full min-h-0 flex-col">
+        <header className="shrink-0 bg-[var(--zone)] px-4 pt-5 pb-4 text-[var(--zone-foreground)]">
           <div className="flex items-start justify-between gap-3">
             <Link
               to="/health/$category/$mode"
@@ -154,7 +154,10 @@ function ChatPage() {
           </p>
         </header>
 
-        <div ref={boxRef} className="flex-1 space-y-4 overflow-y-auto bg-background px-4 py-5">
+        <div
+          ref={boxRef}
+          className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain bg-background px-4 py-5"
+        >
           {messages.length === 0 ? (
             <p className="text-xl text-muted-foreground">
               {isBot
@@ -185,10 +188,10 @@ function ChatPage() {
           ) : null}
         </div>
 
-        <div className="flex items-end gap-2 border-t-2 border-border bg-card px-4 py-4">
+        <div className="flex shrink-0 items-end gap-2 border-t-2 border-border bg-card px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           <textarea
             ref={inputRef}
-            rows={2}
+            rows={1}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
