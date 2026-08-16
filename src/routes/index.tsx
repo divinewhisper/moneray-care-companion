@@ -1,7 +1,7 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Mail, Loader2 } from "lucide-react";
+import { Mail, Loader2, Stethoscope } from "lucide-react";
 
 import { Logo } from "@/components/moneray/Logo";
 import { PhoneShell } from "@/components/moneray/PhoneShell";
@@ -171,9 +171,16 @@ function AuthPage() {
           </button>
         </div>
 
+        <Link
+          to="/doctor"
+          className="mt-8 flex w-full items-center justify-center gap-2 rounded-2xl border-2 border-input px-4 py-5 text-xl font-bold"
+        >
+          <Stethoscope className="size-6" /> ฉันเป็นแพทย์ (เข้าสู่ระบบแพทย์)
+        </Link>
+
         <a
           href="tel:1669"
-          className="mt-8 block rounded-2xl bg-mind px-4 py-5 text-center text-2xl font-bold text-mind-foreground"
+          className="mt-4 block rounded-2xl bg-mind px-4 py-5 text-center text-2xl font-bold text-mind-foreground"
         >
           โทรฉุกเฉิน 1669
         </a>
