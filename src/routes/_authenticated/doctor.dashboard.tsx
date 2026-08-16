@@ -44,7 +44,7 @@ function DoctorDashboard() {
   }
 
   const status = profile?.status ?? "pending";
-  const info = statusInfo[status] ?? statusInfo.pending;
+  const info = statusInfo[status] ?? statusInfo["pending"]!;
 
   return (
     <PhoneShell className="zone-body-diagnose">
