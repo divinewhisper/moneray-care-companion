@@ -188,10 +188,10 @@ function ChatPage() {
           ) : null}
         </div>
 
-        <div className="flex items-end gap-2 border-t-2 border-border bg-card px-4 py-4">
+        <div className="flex shrink-0 items-end gap-2 border-t-2 border-border bg-card px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
           <textarea
             ref={inputRef}
-            rows={2}
+            rows={1}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
