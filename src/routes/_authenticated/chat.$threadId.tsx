@@ -154,7 +154,10 @@ function ChatPage() {
           </p>
         </header>
 
-        <div ref={boxRef} className="flex-1 space-y-4 overflow-y-auto bg-background px-4 py-5">
+        <div
+          ref={boxRef}
+          className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain bg-background px-4 py-5"
+        >
           {messages.length === 0 ? (
             <p className="text-xl text-muted-foreground">
               {isBot
