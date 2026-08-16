@@ -8,13 +8,22 @@ import { Logo } from "./Logo";
 export function PhoneShell({
   children,
   className = "",
+  fullHeight = false,
 }: {
   children: ReactNode;
   className?: string;
+  /** ใช้กับหน้าที่ต้องการความสูงพอดีจอ เช่น หน้าแชต (ไม่มีระยะห่างล่าง) */
+  fullHeight?: boolean;
 }) {
   return (
-    <div className={`min-h-screen bg-background ${className}`}>
-      <div className="relative mx-auto w-full max-w-[430px] pb-16">{children}</div>
+    <div
+      className={`bg-background ${fullHeight ? "h-[100dvh] overflow-hidden" : "min-h-screen"} ${className}`}
+    >
+      <div
+        className={`relative mx-auto w-full max-w-[430px] ${fullHeight ? "h-full" : "pb-16"}`}
+      >
+        {children}
+      </div>
     </div>
   );
 }
