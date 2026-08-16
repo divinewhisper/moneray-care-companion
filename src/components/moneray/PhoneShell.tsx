@@ -20,7 +20,7 @@ export function PhoneShell({
       className={`bg-background ${fullHeight ? "h-[100dvh] overflow-hidden" : "min-h-screen"} ${className}`}
     >
       <div
-        className={`relative mx-auto w-full max-w-[430px] ${fullHeight ? "h-full" : "pb-16"}`}
+        className={`page-in relative mx-auto w-full max-w-[430px] ${fullHeight ? "h-full" : "pb-16"}`}
       >
         {children}
       </div>
