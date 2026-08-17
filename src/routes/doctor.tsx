@@ -37,6 +37,44 @@ function DoctorAuthPage() {
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
 
+  async function goAfterAuth(userId: string) {
+    const { data: profile } = await supabase
+      .from("doctor_profiles")
+      .select("id")
+      .eq("user_id", userId)
+      .maybeSingle();
+    navigate({ to: profile ? "/doctor/dashboard" : "/doctor/register", replace: true });
+  }
+
+  // ถ้ากลับมาจาก Google/Apple แล้วมี session อยู่ ให้พาไปขั้นตอนถัดไป
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (active && data.user) void goAfterAuth(data.user.id);
+    });
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function socialSignIn(provider: "google" | "apple") {
+    setBusy(true);
+    try {
+      const result = await lovable.auth.signInWithOAuth(provider, {
+        redirect_uri: `${window.location.origin}/doctor`,
+      });
+      if (result.error) throw result.error;
+      if (result.redirected) return;
+      const { data } = await supabase.auth.getUser();
+      if (data.user) await goAfterAuth(data.user.id);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "เข้าสู่ระบบไม่สำเร็จ");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
