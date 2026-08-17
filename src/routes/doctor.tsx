@@ -186,6 +186,52 @@ function DoctorAuthPage() {
           </form>
         )}
 
+        <div className="mt-7 flex items-center gap-3">
+          <span className="h-0.5 flex-1 bg-input" />
+          <span className="text-lg text-muted-foreground">หรือ</span>
+          <span className="h-0.5 flex-1 bg-input" />
+        </div>
+
+        <div className="mt-4 space-y-3">
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => socialSignIn("google")}
+            className="flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-input bg-background px-4 py-5 text-xl font-bold disabled:opacity-60"
+          >
+            <svg viewBox="0 0 48 48" className="size-7" aria-hidden="true">
+              <path
+                fill="#EA4335"
+                d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6.1C12.3 13.3 17.6 9.5 24 9.5z"
+              />
+              <path
+                fill="#4285F4"
+                d="M46.5 24.5c0-1.6-.1-2.8-.4-4.1H24v8.4h12.7c-.3 2.1-1.6 5.3-4.7 7.4l7.6 5.9c4.5-4.2 6.9-10.3 6.9-17.6z"
+              />
+              <path
+                fill="#FBBC05"
+                d="M10.4 28.7A14.6 14.6 0 019.6 24c0-1.6.3-3.2.8-4.7l-7.8-6.1A24 24 0 000 24c0 3.9.9 7.5 2.6 10.8l7.8-6.1z"
+              />
+              <path
+                fill="#34A853"
+                d="M24 48c6.5 0 11.9-2.1 15.6-5.8l-7.6-5.9c-2 1.4-4.8 2.4-8 2.4-6.4 0-11.7-3.8-13.6-9.9l-7.8 6.1C6.5 42.6 14.6 48 24 48z"
+              />
+            </svg>
+            ดำเนินการต่อด้วย Google
+          </button>
+          <button
+            type="button"
+            disabled={busy}
+            onClick={() => socialSignIn("apple")}
+            className="flex w-full items-center justify-center gap-3 rounded-2xl border-2 border-input bg-background px-4 py-5 text-xl font-bold disabled:opacity-60"
+          >
+            <svg viewBox="0 0 384 512" className="size-7 fill-foreground" aria-hidden="true">
+              <path d="M318.7 268c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-36.6-2.8-76.6 21.4-91.2 21.4-15.5 0-51-20.3-78.6-20.3C61.4 141 12 184.6 12 271.7c0 26.9 4.9 54.7 14.8 83.3 13.2 37.6 46.3 106 90.9 104.6 23.3-.6 39.8-16.6 70.1-16.6 29.4 0 44.7 16.6 70.7 16.6 45-.6 75-62.5 88.3-100.2-59.9-28.2-58.1-83.1-58.1-91.4zM255.7 90.7c17.6-21.4 26.9-45.6 24.7-73.9-25.9 1.6-49.8 14.2-67.2 34.4-16.9 19.3-27 43.1-24.8 70.4 27.8 2.1 51.2-11.2 67.3-30.9z" />
+            </svg>
+            ดำเนินการต่อด้วย Apple
+          </button>
+        </div>
+
         <Link
           to="/"
           className="mt-8 block rounded-2xl border-2 border-input px-4 py-5 text-center text-xl font-bold"
