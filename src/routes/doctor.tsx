@@ -1,10 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Loader2, Stethoscope } from "lucide-react";
 
 import { Logo } from "@/components/moneray/Logo";
 import { PhoneShell } from "@/components/moneray/PhoneShell";
+import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/doctor")({
