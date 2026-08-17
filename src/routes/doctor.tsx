@@ -54,9 +54,14 @@ function DoctorAuthPage() {
         }
         navigate({ to: "/doctor/register", replace: true });
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        navigate({ to: "/doctor/dashboard", replace: true });
+        const { data: profile } = await supabase
+          .from("doctor_profiles")
+          .select("id")
+          .eq("user_id", data.user.id)
+          .maybeSingle();
+        navigate({ to: profile ? "/doctor/dashboard" : "/doctor/register", replace: true });
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "ดำเนินการไม่สำเร็จ");
