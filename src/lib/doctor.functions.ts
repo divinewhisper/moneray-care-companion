@@ -57,3 +57,144 @@ export const getMyDoctorProfile = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     return data;
   });
+
+/** ยืนยันว่าผู้ใช้ที่ล็อกอินเป็นแพทย์ที่อนุมัติแล้ว */
+async function requireApprovedDoctor(context: { supabase: any; userId: string }) {
+  const { data, error } = await context.supabase
+    .from("doctor_profiles")
+    .select("status, first_name, last_name")
+    .eq("user_id", context.userId)
+    .maybeSingle();
+  if (error) throw new Error(error.message);
+  if (!data || data.status !== "approved") throw new Error("บัญชีแพทย์ยังไม่ได้รับการอนุมัติ");
+  return data as { status: string; first_name: string; last_name: string };
+}
+
+/** รายการคำถามจากผู้ใช้ทุกคนที่ส่งถึงแพทย์ */
+export const listPatientThreads = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireApprovedDoctor(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: conversations, error } = await supabaseAdmin
+      .from("conversations")
+      .select("id, user_id, title, category, mode, channel, created_at, updated_at")
+      .eq("channel", "doctor")
+      .order("updated_at", { ascending: false })
+      .limit(100);
+    if (error) throw new Error(error.message);
+    const list = conversations ?? [];
+    if (list.length === 0) return [];
+
+    const ids = list.map((c) => c.id);
+    const userIds = [...new Set(list.map((c) => c.user_id))];
+
+    const [{ data: messages }, { data: profiles }] = await Promise.all([
+      supabaseAdmin
+        .from("messages")
+        .select("conversation_id, role, content, created_at")
+        .in("conversation_id", ids)
+        .order("created_at", { ascending: true }),
+      supabaseAdmin.from("profiles").select("id, first_name, last_name, phone").in("id", userIds),
+    ]);
+
+    const nameOf = new Map((profiles ?? []).map((p) => [p.id, p]));
+
+    return list.map((c) => {
+      const msgs = (messages ?? []).filter((m) => m.conversation_id === c.id);
+      const userMsgs = msgs.filter((m) => m.role === "user");
+      const last = msgs[msgs.length - 1];
+      const p = nameOf.get(c.user_id);
+      return {
+        id: c.id,
+        title: c.title,
+        category: c.category,
+        mode: c.mode,
+        updatedAt: c.updated_at,
+        patientName: p ? `${p.first_name} ${p.last_name}`.trim() || "ผู้ใช้" : "ผู้ใช้",
+        patientPhone: p?.phone ?? "",
+        questionCount: userMsgs.length,
+        lastQuestion: userMsgs[userMsgs.length - 1]?.content ?? "",
+        awaitingReply: last?.role === "user",
+      };
+    });
+  });
+
+/** ข้อความทั้งหมดในหนึ่งการสนทนา (มุมมองแพทย์) */
+export const getPatientThread = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => z.object({ threadId: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    await requireApprovedDoctor(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: conversation, error } = await supabaseAdmin
+      .from("conversations")
+      .select("id, user_id, title, category, mode, channel")
+      .eq("id", data.threadId)
+      .eq("channel", "doctor")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!conversation) throw new Error("ไม่พบการสนทนานี้");
+
+    const [{ data: messages }, { data: profile }] = await Promise.all([
+      supabaseAdmin
+        .from("messages")
+        .select("id, role, content, created_at")
+        .eq("conversation_id", conversation.id)
+        .order("created_at", { ascending: true }),
+      supabaseAdmin
+        .from("profiles")
+        .select("first_name, last_name, phone")
+        .eq("id", conversation.user_id)
+        .maybeSingle(),
+    ]);
+
+    return {
+      id: conversation.id,
+      title: conversation.title,
+      category: conversation.category,
+      mode: conversation.mode,
+      patientName: profile
+        ? `${profile.first_name} ${profile.last_name}`.trim() || "ผู้ใช้"
+        : "ผู้ใช้",
+      patientPhone: profile?.phone ?? "",
+      messages: messages ?? [],
+    };
+  });
+
+/** แพทย์ตอบกลับผู้ป่วย */
+export const replyToPatient = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z.object({ threadId: z.string().uuid(), content: z.string().trim().min(1).max(4000) }).parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const doctor = await requireApprovedDoctor(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: conversation, error } = await supabaseAdmin
+      .from("conversations")
+      .select("id, user_id")
+      .eq("id", data.threadId)
+      .eq("channel", "doctor")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    if (!conversation) throw new Error("ไม่พบการสนทนานี้");
+
+    const { error: insertError } = await supabaseAdmin.from("messages").insert({
+      conversation_id: conversation.id,
+      user_id: conversation.user_id,
+      role: "assistant",
+      content: `นพ. ${doctor.first_name} ${doctor.last_name}: ${data.content}`,
+    });
+    if (insertError) throw new Error(insertError.message);
+
+    await supabaseAdmin
+      .from("conversations")
+      .update({ updated_at: new Date().toISOString() })
+      .eq("id", conversation.id);
+
+    return { ok: true };
+  });
