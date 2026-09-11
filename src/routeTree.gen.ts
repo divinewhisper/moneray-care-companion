@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as DoctorRouteImport } from './routes/doctor'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedMedicationsRouteImport } from './routes/_authenticated/medications'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated/onboarding'
@@ -42,6 +43,11 @@ const DoctorRoute = DoctorRouteImport.update({
 const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   id: '/account',
   path: '/account',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/doctor': typeof DoctorRoute
   '/account': typeof AuthenticatedAccountRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/home': typeof AuthenticatedHomeRoute
   '/medications': typeof AuthenticatedMedicationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -128,6 +135,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/doctor': typeof DoctorRoute
   '/account': typeof AuthenticatedAccountRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/home': typeof AuthenticatedHomeRoute
   '/medications': typeof AuthenticatedMedicationsRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
@@ -145,6 +153,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/doctor': typeof DoctorRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/medications': typeof AuthenticatedMedicationsRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
@@ -163,6 +172,7 @@ export interface FileRouteTypes {
     | '/'
     | '/doctor'
     | '/account'
+    | '/admin'
     | '/home'
     | '/medications'
     | '/onboarding'
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/'
     | '/doctor'
     | '/account'
+    | '/admin'
     | '/home'
     | '/medications'
     | '/onboarding'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/doctor'
     | '/_authenticated/account'
+    | '/_authenticated/admin'
     | '/_authenticated/home'
     | '/_authenticated/medications'
     | '/_authenticated/onboarding'
@@ -243,6 +255,13 @@ declare module '@tanstack/react-router' {
       path: '/account'
       fullPath: '/account'
       preLoaderRoute: typeof AuthenticatedAccountRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/home': {
@@ -344,6 +363,7 @@ const AuthenticatedHealthCategoryRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedMedicationsRoute: typeof AuthenticatedMedicationsRoute
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
@@ -356,6 +376,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedMedicationsRoute: AuthenticatedMedicationsRoute,
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
