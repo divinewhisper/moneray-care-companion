@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
@@ -13,12 +14,14 @@ import {
   Phone,
   Pill,
   Search,
+  ShieldCheck,
   CalendarCheck,
 } from "lucide-react";
 
 import { Logo } from "@/components/moneray/Logo";
 import { PhoneShell } from "@/components/moneray/PhoneShell";
 import { supabase } from "@/integrations/supabase/client";
+import { amIAdmin } from "@/lib/admin.functions";
 import { thaiDate, thaiDateTime } from "@/lib/moneray";
 
 export const Route = createFileRoute("/_authenticated/home")({
@@ -40,6 +43,13 @@ function HomePage() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const notified = useRef<Set<string>>(new Set());
+  const checkAdmin = useServerFn(amIAdmin);
+
+  const { data: admin } = useQuery({
+    queryKey: ["am-i-admin"],
+    queryFn: () => checkAdmin(),
+  });
+  const isAdmin = admin?.isAdmin === true;
 
   const { data: profile } = useQuery({
     queryKey: ["profile"],
@@ -294,6 +304,19 @@ function HomePage() {
           </span>
           <ChevronRight className="size-8" />
         </Link>
+
+        {isAdmin ? (
+          <Link
+            to="/admin"
+            className="flex items-center justify-between rounded-2xl border-2 border-input bg-card p-5"
+          >
+            <span className="flex items-center gap-3 text-2xl font-bold">
+              <ShieldCheck className="size-8 text-topbar" />
+              หน้าผู้ดูแลระบบ (อนุมัติแพทย์)
+            </span>
+            <ChevronRight className="size-8" />
+          </Link>
+        ) : null}
 
         {/* เบอร์ฉุกเฉิน */}
         <a
