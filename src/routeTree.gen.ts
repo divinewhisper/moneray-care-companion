@@ -23,6 +23,8 @@ import { Route as AuthenticatedChatThreadIdRouteImport } from './routes/_authent
 import { Route as AuthenticatedDoctorDashboardRouteImport } from './routes/_authenticated/doctor.dashboard'
 import { Route as AuthenticatedDoctorRegisterRouteImport } from './routes/_authenticated/doctor.register'
 import { Route as AuthenticatedHealthCategoryRouteImport } from './routes/_authenticated/health.$category'
+import { Route as AuthenticatedDoctorPatientsIndexRouteImport } from './routes/_authenticated/doctor.patients.index'
+import { Route as AuthenticatedDoctorPatientsThreadIdRouteImport } from './routes/_authenticated/doctor.patients.$threadId'
 import { Route as AuthenticatedHealthCategoryIndexRouteImport } from './routes/_authenticated/health.$category.index'
 import { Route as AuthenticatedHealthCategoryModeRouteImport } from './routes/_authenticated/health.$category.$mode'
 
@@ -101,6 +103,18 @@ const AuthenticatedHealthCategoryRoute =
     path: '/health/$category',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedDoctorPatientsIndexRoute =
+  AuthenticatedDoctorPatientsIndexRouteImport.update({
+    id: '/doctor/patients/',
+    path: '/doctor/patients/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDoctorPatientsThreadIdRoute =
+  AuthenticatedDoctorPatientsThreadIdRouteImport.update({
+    id: '/doctor/patients/$threadId',
+    path: '/doctor/patients/$threadId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedHealthCategoryIndexRoute =
   AuthenticatedHealthCategoryIndexRouteImport.update({
     id: '/',
@@ -128,7 +142,9 @@ export interface FileRoutesByFullPath {
   '/doctor/dashboard': typeof AuthenticatedDoctorDashboardRoute
   '/doctor/register': typeof AuthenticatedDoctorRegisterRoute
   '/health/$category': typeof AuthenticatedHealthCategoryRouteWithChildren
+  '/doctor/patients/$threadId': typeof AuthenticatedDoctorPatientsThreadIdRoute
   '/health/$category/$mode': typeof AuthenticatedHealthCategoryModeRoute
+  '/doctor/patients/': typeof AuthenticatedDoctorPatientsIndexRoute
   '/health/$category/': typeof AuthenticatedHealthCategoryIndexRoute
 }
 export interface FileRoutesByTo {
@@ -144,7 +160,9 @@ export interface FileRoutesByTo {
   '/chat/$threadId': typeof AuthenticatedChatThreadIdRoute
   '/doctor/dashboard': typeof AuthenticatedDoctorDashboardRoute
   '/doctor/register': typeof AuthenticatedDoctorRegisterRoute
+  '/doctor/patients/$threadId': typeof AuthenticatedDoctorPatientsThreadIdRoute
   '/health/$category/$mode': typeof AuthenticatedHealthCategoryModeRoute
+  '/doctor/patients': typeof AuthenticatedDoctorPatientsIndexRoute
   '/health/$category': typeof AuthenticatedHealthCategoryIndexRoute
 }
 export interface FileRoutesById {
@@ -163,7 +181,9 @@ export interface FileRoutesById {
   '/_authenticated/doctor/dashboard': typeof AuthenticatedDoctorDashboardRoute
   '/_authenticated/doctor/register': typeof AuthenticatedDoctorRegisterRoute
   '/_authenticated/health/$category': typeof AuthenticatedHealthCategoryRouteWithChildren
+  '/_authenticated/doctor/patients/$threadId': typeof AuthenticatedDoctorPatientsThreadIdRoute
   '/_authenticated/health/$category/$mode': typeof AuthenticatedHealthCategoryModeRoute
+  '/_authenticated/doctor/patients/': typeof AuthenticatedDoctorPatientsIndexRoute
   '/_authenticated/health/$category/': typeof AuthenticatedHealthCategoryIndexRoute
 }
 export interface FileRouteTypes {
@@ -182,7 +202,9 @@ export interface FileRouteTypes {
     | '/doctor/dashboard'
     | '/doctor/register'
     | '/health/$category'
+    | '/doctor/patients/$threadId'
     | '/health/$category/$mode'
+    | '/doctor/patients/'
     | '/health/$category/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -198,7 +220,9 @@ export interface FileRouteTypes {
     | '/chat/$threadId'
     | '/doctor/dashboard'
     | '/doctor/register'
+    | '/doctor/patients/$threadId'
     | '/health/$category/$mode'
+    | '/doctor/patients'
     | '/health/$category'
   id:
     | '__root__'
@@ -216,7 +240,9 @@ export interface FileRouteTypes {
     | '/_authenticated/doctor/dashboard'
     | '/_authenticated/doctor/register'
     | '/_authenticated/health/$category'
+    | '/_authenticated/doctor/patients/$threadId'
     | '/_authenticated/health/$category/$mode'
+    | '/_authenticated/doctor/patients/'
     | '/_authenticated/health/$category/'
   fileRoutesById: FileRoutesById
 }
@@ -327,6 +353,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHealthCategoryRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/doctor/patients/': {
+      id: '/_authenticated/doctor/patients/'
+      path: '/doctor/patients'
+      fullPath: '/doctor/patients/'
+      preLoaderRoute: typeof AuthenticatedDoctorPatientsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/doctor/patients/$threadId': {
+      id: '/_authenticated/doctor/patients/$threadId'
+      path: '/doctor/patients/$threadId'
+      fullPath: '/doctor/patients/$threadId'
+      preLoaderRoute: typeof AuthenticatedDoctorPatientsThreadIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/health/$category/': {
       id: '/_authenticated/health/$category/'
       path: '/'
@@ -372,6 +412,8 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDoctorDashboardRoute: typeof AuthenticatedDoctorDashboardRoute
   AuthenticatedDoctorRegisterRoute: typeof AuthenticatedDoctorRegisterRoute
   AuthenticatedHealthCategoryRoute: typeof AuthenticatedHealthCategoryRouteWithChildren
+  AuthenticatedDoctorPatientsThreadIdRoute: typeof AuthenticatedDoctorPatientsThreadIdRoute
+  AuthenticatedDoctorPatientsIndexRoute: typeof AuthenticatedDoctorPatientsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -386,6 +428,9 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDoctorRegisterRoute: AuthenticatedDoctorRegisterRoute,
   AuthenticatedHealthCategoryRoute:
     AuthenticatedHealthCategoryRouteWithChildren,
+  AuthenticatedDoctorPatientsThreadIdRoute:
+    AuthenticatedDoctorPatientsThreadIdRoute,
+  AuthenticatedDoctorPatientsIndexRoute: AuthenticatedDoctorPatientsIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

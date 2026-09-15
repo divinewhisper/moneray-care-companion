@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Clock, LogOut, ShieldCheck, XCircle } from "lucide-react";
+import { Clock, LogOut, MessageCircle, ShieldCheck, XCircle } from "lucide-react";
 
 import { PhoneShell, ZoneHeader } from "@/components/moneray/PhoneShell";
 import { supabase } from "@/integrations/supabase/client";
@@ -93,9 +93,17 @@ function DoctorDashboard() {
             </div>
 
             {status === "approved" ? (
-              <div className="rounded-2xl bg-secondary p-5 text-xl">
-                ยังไม่มีคำขอปรึกษาใหม่ในขณะนี้ ระบบจะแจ้งเตือนเมื่อมีผู้ป่วยเริ่มการสนทนา
-              </div>
+              <>
+                <Link
+                  to="/doctor/patients"
+                  className="flex items-center justify-center gap-2 rounded-2xl bg-[var(--zone)] px-4 py-5 text-2xl font-bold text-[var(--zone-foreground)]"
+                >
+                  <MessageCircle className="size-7" /> คำถามจากผู้ป่วย
+                </Link>
+                <div className="rounded-2xl bg-secondary p-5 text-xl">
+                  การสนทนาที่ผู้ป่วยส่งถึงแพทย์จะแสดงในกล่องคำถามด้านบน
+                </div>
+              </>
             ) : (
               <Link
                 to="/doctor/register"
