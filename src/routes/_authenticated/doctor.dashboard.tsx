@@ -1,11 +1,13 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Clock, LogOut, MessageCircle, ShieldCheck, XCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { Clock, LogOut, MessageCircle, Pencil, ShieldCheck, XCircle } from "lucide-react";
 
 import { PhoneShell, ZoneHeader } from "@/components/moneray/PhoneShell";
 import { supabase } from "@/integrations/supabase/client";
-import { getMyDoctorProfile } from "@/lib/doctor.functions";
+import { getMyDoctorProfile, updateDoctorName } from "@/lib/doctor.functions";
 
 export const Route = createFileRoute("/_authenticated/doctor/dashboard")({
   component: DoctorDashboard,
@@ -30,11 +32,40 @@ function DoctorDashboard() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const fetchProfile = useServerFn(getMyDoctorProfile);
+  const saveName = useServerFn(updateDoctorName);
+  const [editing, setEditing] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["doctor-profile"],
     queryFn: () => fetchProfile(),
   });
+
+  useEffect(() => {
+    if (!profile) return;
+    setFirstName(profile.first_name ?? "");
+    setLastName(profile.last_name ?? "");
+  }, [profile]);
+
+  async function save() {
+    if (!firstName.trim() || !lastName.trim()) {
+      toast.error("กรุณากรอกชื่อและนามสกุล");
+      return;
+    }
+    setSaving(true);
+    try {
+      await saveName({ data: { firstName: firstName.trim(), lastName: lastName.trim() } });
+      await queryClient.invalidateQueries({ queryKey: ["doctor-profile"] });
+      toast.success("เปลี่ยนชื่อเรียบร้อย");
+      setEditing(false);
+    } catch {
+      toast.error("บันทึกไม่สำเร็จ กรุณาลองอีกครั้ง");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   async function signOut() {
     await queryClient.cancelQueries();
