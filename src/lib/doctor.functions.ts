@@ -56,6 +56,22 @@ export const getMyDoctorProfile = createServerFn({ method: "GET" })
       .maybeSingle();
     if (error) throw new Error(error.message);
     return data;
+});
+
+/** แพทย์เปลี่ยนชื่อ-นามสกุลของตนเอง */
+export const updateDoctorName = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z.object({ firstName: z.string().trim().min(1).max(100), lastName: z.string().trim().min(1).max(100) }).parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("doctor_profiles")
+      .update({ first_name: data.firstName, last_name: data.lastName })
+      .eq("user_id", context.userId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 /** ยืนยันว่าผู้ใช้ที่ล็อกอินเป็นแพทย์ที่อนุมัติแล้ว */
