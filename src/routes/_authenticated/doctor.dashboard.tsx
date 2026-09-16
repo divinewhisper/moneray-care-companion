@@ -96,12 +96,47 @@ function DoctorDashboard() {
         ) : (
           <>
             <div className="rounded-2xl bg-secondary p-5">
-              <p className="text-lg text-muted-foreground">แพทย์</p>
-              <p className="text-3xl font-bold">
-                นพ. {profile.first_name} {profile.last_name}
-              </p>
-              <p className="mt-1 text-xl">{profile.specialty}</p>
-              <p className="text-xl text-muted-foreground">{profile.hospital}</p>
+              <div className="flex items-center justify-between">
+                <p className="text-lg text-muted-foreground">แพทย์</p>
+                <button
+                  onClick={() => setEditing((v) => !v)}
+                  className="rounded-xl bg-white p-3"
+                  aria-label="แก้ไขชื่อ"
+                >
+                  <Pencil className="size-6" />
+                </button>
+              </div>
+              {editing ? (
+                <div className="mt-3 space-y-3">
+                  <input
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="ชื่อ"
+                    className="w-full rounded-2xl border-2 border-input px-4 py-4 text-xl"
+                  />
+                  <input
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="นามสกุล"
+                    className="w-full rounded-2xl border-2 border-input px-4 py-4 text-xl"
+                  />
+                  <button
+                    onClick={save}
+                    disabled={saving}
+                    className="w-full rounded-2xl bg-[var(--zone)] px-4 py-4 text-xl font-bold text-[var(--zone-foreground)] disabled:opacity-60"
+                  >
+                    {saving ? "กำลังบันทึก…" : "บันทึกชื่อใหม่"}
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <p className="text-3xl font-bold">
+                    นพ. {profile.first_name} {profile.last_name}
+                  </p>
+                  <p className="mt-1 text-xl">{profile.specialty}</p>
+                  <p className="text-xl text-muted-foreground">{profile.hospital}</p>
+                </>
+              )}
             </div>
 
             <div className="flex items-start gap-3 rounded-2xl border-2 border-input p-5">
