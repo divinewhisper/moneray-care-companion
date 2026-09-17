@@ -50,8 +50,10 @@ export type Database = {
           category: string
           channel: string
           created_at: string
+          doctor_last_read_at: string | null
           id: string
           mode: string
+          patient_last_read_at: string | null
           title: string
           updated_at: string
           user_id: string
@@ -61,8 +63,10 @@ export type Database = {
           category: string
           channel?: string
           created_at?: string
+          doctor_last_read_at?: string | null
           id?: string
           mode: string
+          patient_last_read_at?: string | null
           title?: string
           updated_at?: string
           user_id: string
@@ -72,8 +76,10 @@ export type Database = {
           category?: string
           channel?: string
           created_at?: string
+          doctor_last_read_at?: string | null
           id?: string
           mode?: string
+          patient_last_read_at?: string | null
           title?: string
           updated_at?: string
           user_id?: string

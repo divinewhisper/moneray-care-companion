@@ -56,6 +56,16 @@ function ChatPage() {
     inputRef.current?.focus();
   }, [threadId, pending]);
 
+  // เปิดอ่านแล้ว = ล้างสัญลักษณ์ข้อความใหม่ของผู้ใช้
+  useEffect(() => {
+    if (messages.length === 0) return;
+    void supabase
+      .from("conversations")
+      .update({ patient_last_read_at: new Date().toISOString() })
+      .eq("id", threadId)
+      .then(() => queryClient.invalidateQueries({ queryKey: ["conversation-unread"] }));
+  }, [messages.length, threadId, queryClient]);
+
   if (!isLoading && !conversation) throw notFound();
 
   const category = (conversation?.category ?? "body") as Category;

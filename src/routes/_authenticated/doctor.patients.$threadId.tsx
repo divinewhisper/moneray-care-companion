@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { PhoneShell, ZoneHeader } from "@/components/moneray/PhoneShell";
-import { getPatientThread, replyToPatient } from "@/lib/doctor.functions";
+import { getPatientThread, markPatientThreadRead, replyToPatient } from "@/lib/doctor.functions";
 
 export const Route = createFileRoute("/_authenticated/doctor/patients/$threadId")({
   component: DoctorThread,
@@ -17,6 +17,7 @@ function DoctorThread() {
   const queryClient = useQueryClient();
   const fetchThread = useServerFn(getPatientThread);
   const sendReply = useServerFn(replyToPatient);
+  const markRead = useServerFn(markPatientThreadRead);
   const [text, setText] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -29,6 +30,15 @@ function DoctorThread() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end" });
   }, [data?.messages.length]);
+
+  // เปิดอ่านแล้ว = ล้างสัญลักษณ์ข้อความใหม่
+  useEffect(() => {
+    if (!data?.messages.length) return;
+    void markRead({ data: { threadId } })
+      .then(() => queryClient.invalidateQueries({ queryKey: ["doctor-threads"] }))
+      .catch(() => undefined);
+  }, [data?.messages.length, markRead, queryClient, threadId]);
+
 
   const mutation = useMutation({
     mutationFn: (content: string) => sendReply({ data: { threadId, content } }),

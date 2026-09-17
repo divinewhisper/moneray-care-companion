@@ -95,7 +95,9 @@ export const listPatientThreads = createServerFn({ method: "GET" })
 
     const { data: conversations, error } = await supabaseAdmin
       .from("conversations")
-      .select("id, user_id, title, category, mode, channel, created_at, updated_at, assigned_doctor_id")
+      .select(
+        "id, user_id, title, category, mode, channel, created_at, updated_at, assigned_doctor_id, doctor_last_read_at",
+      )
       .eq("channel", "doctor")
       .or(`assigned_doctor_id.is.null,assigned_doctor_id.eq.${context.userId}`)
       .order("updated_at", { ascending: false })
@@ -123,6 +125,8 @@ export const listPatientThreads = createServerFn({ method: "GET" })
       const userMsgs = msgs.filter((m) => m.role === "user");
       const last = msgs[msgs.length - 1];
       const p = nameOf.get(c.user_id);
+      const readAt = c.doctor_last_read_at ? new Date(c.doctor_last_read_at).getTime() : 0;
+      const unreadCount = userMsgs.filter((m) => new Date(m.created_at).getTime() > readAt).length;
       return {
         id: c.id,
         title: c.title,
@@ -135,6 +139,7 @@ export const listPatientThreads = createServerFn({ method: "GET" })
         questionCount: userMsgs.length,
         lastQuestion: userMsgs[userMsgs.length - 1]?.content ?? "",
         awaitingReply: last?.role === "user",
+        unreadCount,
       };
     });
   });
@@ -230,11 +235,29 @@ export const replyToPatient = createServerFn({ method: "POST" })
     });
     if (insertError) throw new Error(insertError.message);
 
+    const now = new Date().toISOString();
     await supabaseAdmin
       .from("conversations")
-      .update({ updated_at: new Date().toISOString() })
+      .update({ updated_at: now, doctor_last_read_at: now })
       .eq("id", conversation.id);
 
 
+    return { ok: true };
+  });
+
+/** แพทย์ทำเครื่องหมายว่าอ่านการสนทนานี้แล้ว */
+export const markPatientThreadRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => z.object({ threadId: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    await requireApprovedDoctor(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("conversations")
+      .update({ doctor_last_read_at: new Date().toISOString() })
+      .eq("id", data.threadId)
+      .eq("channel", "doctor")
+      .or(`assigned_doctor_id.is.null,assigned_doctor_id.eq.${context.userId}`);
+    if (error) throw new Error(error.message);
     return { ok: true };
   });
