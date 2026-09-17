@@ -178,6 +178,7 @@ export const getPatientThread = createServerFn({ method: "GET" })
       title: conversation.title,
       category: conversation.category,
       mode: conversation.mode,
+      mine: conversation.assigned_doctor_id === context.userId,
       patientName: profile
         ? `${profile.first_name} ${profile.last_name}`.trim() || "ผู้ใช้"
         : "ผู้ใช้",
@@ -185,6 +186,7 @@ export const getPatientThread = createServerFn({ method: "GET" })
       messages: messages ?? [],
     };
   });
+
 
 /** แพทย์ตอบกลับผู้ป่วย */
 export const replyToPatient = createServerFn({ method: "POST" })
