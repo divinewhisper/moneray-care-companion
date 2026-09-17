@@ -235,11 +235,29 @@ export const replyToPatient = createServerFn({ method: "POST" })
     });
     if (insertError) throw new Error(insertError.message);
 
+    const now = new Date().toISOString();
     await supabaseAdmin
       .from("conversations")
-      .update({ updated_at: new Date().toISOString() })
+      .update({ updated_at: now, doctor_last_read_at: now })
       .eq("id", conversation.id);
 
 
+    return { ok: true };
+  });
+
+/** แพทย์ทำเครื่องหมายว่าอ่านการสนทนานี้แล้ว */
+export const markPatientThreadRead = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) => z.object({ threadId: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    await requireApprovedDoctor(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("conversations")
+      .update({ doctor_last_read_at: new Date().toISOString() })
+      .eq("id", data.threadId)
+      .eq("channel", "doctor")
+      .or(`assigned_doctor_id.is.null,assigned_doctor_id.eq.${context.userId}`);
+    if (error) throw new Error(error.message);
     return { ok: true };
   });
