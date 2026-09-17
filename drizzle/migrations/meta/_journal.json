@@ -8,6 +8,13 @@
       "when": 1789660459197,
       "tag": "0000_add_assigned_doctor_to_conversations",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789660868698,
+      "tag": "0001_add_unread_read_markers",
+      "breakpoints": true
     }
   ]
 }
