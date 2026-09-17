@@ -125,6 +125,8 @@ export const listPatientThreads = createServerFn({ method: "GET" })
       const userMsgs = msgs.filter((m) => m.role === "user");
       const last = msgs[msgs.length - 1];
       const p = nameOf.get(c.user_id);
+      const readAt = c.doctor_last_read_at ? new Date(c.doctor_last_read_at).getTime() : 0;
+      const unreadCount = userMsgs.filter((m) => new Date(m.created_at).getTime() > readAt).length;
       return {
         id: c.id,
         title: c.title,
@@ -137,6 +139,7 @@ export const listPatientThreads = createServerFn({ method: "GET" })
         questionCount: userMsgs.length,
         lastQuestion: userMsgs[userMsgs.length - 1]?.content ?? "",
         awaitingReply: last?.role === "user",
+        unreadCount,
       };
     });
   });
