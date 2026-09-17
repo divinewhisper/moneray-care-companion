@@ -42,14 +42,29 @@ function DoctorInbox() {
               key={t.id}
               to="/doctor/patients/$threadId"
               params={{ threadId: t.id }}
-              className="block rounded-2xl border-2 border-input p-5"
+              className={`block rounded-2xl border-2 p-5 ${
+                t.unreadCount > 0 ? "border-[var(--zone)] bg-[var(--zone-soft)]" : "border-input"
+              }`}
             >
               <div className="flex items-start justify-between gap-3">
-                <p className="text-2xl font-bold">{t.patientName}</p>
+                <p className="flex items-center gap-2 text-2xl font-bold">
+                  {t.unreadCount > 0 ? (
+                    <span
+                      aria-hidden
+                      className="inline-block size-3 shrink-0 rounded-full bg-destructive"
+                    />
+                  ) : null}
+                  {t.patientName}
+                </p>
                 <div className="flex shrink-0 flex-wrap justify-end gap-2">
                   {t.mine ? (
                     <span className="rounded-xl bg-secondary px-3 py-1 text-lg font-bold">
                       ผู้ป่วยของฉัน
+                    </span>
+                  ) : null}
+                  {t.unreadCount > 0 ? (
+                    <span className="rounded-xl bg-destructive px-3 py-1 text-lg font-bold text-destructive-foreground">
+                      ใหม่ {t.unreadCount}
                     </span>
                   ) : null}
                   {t.awaitingReply ? (
