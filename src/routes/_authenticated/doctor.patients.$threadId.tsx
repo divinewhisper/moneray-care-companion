@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { PhoneShell, ZoneHeader } from "@/components/moneray/PhoneShell";
-import { getPatientThread, replyToPatient } from "@/lib/doctor.functions";
+import { getPatientThread, markPatientThreadRead, replyToPatient } from "@/lib/doctor.functions";
 
 export const Route = createFileRoute("/_authenticated/doctor/patients/$threadId")({
   component: DoctorThread,
