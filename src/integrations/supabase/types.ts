@@ -46,6 +46,7 @@ export type Database = {
       }
       conversations: {
         Row: {
+          assigned_doctor_id: string | null
           category: string
           channel: string
           created_at: string
@@ -56,6 +57,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          assigned_doctor_id?: string | null
           category: string
           channel?: string
           created_at?: string
@@ -66,6 +68,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          assigned_doctor_id?: string | null
           category?: string
           channel?: string
           created_at?: string
