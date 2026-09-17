@@ -95,7 +95,9 @@ export const listPatientThreads = createServerFn({ method: "GET" })
 
     const { data: conversations, error } = await supabaseAdmin
       .from("conversations")
-      .select("id, user_id, title, category, mode, channel, created_at, updated_at, assigned_doctor_id")
+      .select(
+        "id, user_id, title, category, mode, channel, created_at, updated_at, assigned_doctor_id, doctor_last_read_at",
+      )
       .eq("channel", "doctor")
       .or(`assigned_doctor_id.is.null,assigned_doctor_id.eq.${context.userId}`)
       .order("updated_at", { ascending: false })
