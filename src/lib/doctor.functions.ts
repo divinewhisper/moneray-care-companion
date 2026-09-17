@@ -200,12 +200,27 @@ export const replyToPatient = createServerFn({ method: "POST" })
 
     const { data: conversation, error } = await supabaseAdmin
       .from("conversations")
-      .select("id, user_id")
+      .select("id, user_id, assigned_doctor_id")
       .eq("id", data.threadId)
       .eq("channel", "doctor")
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!conversation) throw new Error("ไม่พบการสนทนานี้");
+    if (conversation.assigned_doctor_id && conversation.assigned_doctor_id !== context.userId)
+      throw new Error("การสนทนานี้มีแพทย์ท่านอื่นดูแลอยู่แล้ว");
+
+    // จับจองการสนทนาแบบกันชน: สำเร็จเฉพาะเมื่อยังว่างหรือเป็นของแพทย์คนนี้
+    if (!conversation.assigned_doctor_id) {
+      const { data: claimed, error: claimError } = await supabaseAdmin
+        .from("conversations")
+        .update({ assigned_doctor_id: context.userId })
+        .eq("id", conversation.id)
+        .is("assigned_doctor_id", null)
+        .select("id")
+        .maybeSingle();
+      if (claimError) throw new Error(claimError.message);
+      if (!claimed) throw new Error("การสนทนานี้มีแพทย์ท่านอื่นดูแลอยู่แล้ว");
+    }
 
     const { error: insertError } = await supabaseAdmin.from("messages").insert({
       conversation_id: conversation.id,
@@ -219,6 +234,7 @@ export const replyToPatient = createServerFn({ method: "POST" })
       .from("conversations")
       .update({ updated_at: new Date().toISOString() })
       .eq("id", conversation.id);
+
 
     return { ok: true };
   });
