@@ -150,12 +150,15 @@ export const getPatientThread = createServerFn({ method: "GET" })
 
     const { data: conversation, error } = await supabaseAdmin
       .from("conversations")
-      .select("id, user_id, title, category, mode, channel")
+      .select("id, user_id, title, category, mode, channel, assigned_doctor_id")
       .eq("id", data.threadId)
       .eq("channel", "doctor")
       .maybeSingle();
     if (error) throw new Error(error.message);
     if (!conversation) throw new Error("ไม่พบการสนทนานี้");
+    if (conversation.assigned_doctor_id && conversation.assigned_doctor_id !== context.userId)
+      throw new Error("การสนทนานี้มีแพทย์ท่านอื่นดูแลอยู่แล้ว");
+
 
     const [{ data: messages }, { data: profile }] = await Promise.all([
       supabaseAdmin
