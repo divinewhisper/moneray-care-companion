@@ -46,12 +46,20 @@ function DoctorInbox() {
             >
               <div className="flex items-start justify-between gap-3">
                 <p className="text-2xl font-bold">{t.patientName}</p>
-                {t.awaitingReply ? (
-                  <span className="shrink-0 rounded-xl bg-[var(--zone)] px-3 py-1 text-lg font-bold text-[var(--zone-foreground)]">
-                    รอตอบ
-                  </span>
-                ) : null}
+                <div className="flex shrink-0 flex-wrap justify-end gap-2">
+                  {t.mine ? (
+                    <span className="rounded-xl bg-secondary px-3 py-1 text-lg font-bold">
+                      ผู้ป่วยของฉัน
+                    </span>
+                  ) : null}
+                  {t.awaitingReply ? (
+                    <span className="rounded-xl bg-[var(--zone)] px-3 py-1 text-lg font-bold text-[var(--zone-foreground)]">
+                      รอตอบ
+                    </span>
+                  ) : null}
+                </div>
               </div>
+
               <p className="mt-1 text-lg text-muted-foreground">
                 {t.category === "mental" ? "สุขภาพจิต" : "สุขภาพกาย"} ·{" "}
                 {t.mode === "diagnose" ? "วินิจฉัยโรค" : "ติดตามอาการ"}
