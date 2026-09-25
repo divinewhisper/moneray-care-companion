@@ -15,6 +15,13 @@
       "when": 1789660868698,
       "tag": "0001_add_unread_read_markers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790348621163,
+      "tag": "0002_add_avatars",
+      "breakpoints": true
     }
   ]
 }

@@ -7,6 +7,7 @@ import { Clock, LogOut, MessageCircle, Pencil, ShieldCheck, XCircle } from "luci
 
 import { PhoneShell, ZoneHeader } from "@/components/moneray/PhoneShell";
 import { supabase } from "@/integrations/supabase/client";
+import { AvatarUploader } from "@/components/moneray/Avatar";
 import { getMyDoctorProfile, updateDoctorName } from "@/lib/doctor.functions";
 
 export const Route = createFileRoute("/_authenticated/doctor/dashboard")({
@@ -41,6 +42,14 @@ function DoctorDashboard() {
   const { data: profile, isLoading } = useQuery({
     queryKey: ["doctor-profile"],
     queryFn: () => fetchProfile(),
+  });
+
+  const { data: myProfile } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      const { data } = await supabase.from("profiles").select("*").maybeSingle();
+      return data;
+    },
   });
 
   useEffect(() => {
@@ -95,6 +104,7 @@ function DoctorDashboard() {
           </div>
         ) : (
           <>
+            <AvatarUploader path={myProfile?.avatar_url} />
             <div className="rounded-2xl bg-secondary p-5">
               <div className="flex items-center justify-between">
                 <p className="text-lg text-muted-foreground">แพทย์</p>

@@ -261,3 +261,60 @@ export const markPatientThreadRead = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+/** รายชื่อแพทย์ที่อนุมัติแล้ว สำหรับผู้ใช้ค้นหาและติดต่อโดยตรง */
+export const listApprovedDoctors = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("doctor_profiles")
+      .select("user_id, first_name, last_name, specialty, hospital")
+      .eq("status", "approved")
+      .order("first_name");
+    if (error) throw new Error(error.message);
+    const list = data ?? [];
+    if (list.length === 0) return [];
+    const { data: profiles } = await supabaseAdmin
+      .from("profiles")
+      .select("id, avatar_url")
+      .in("id", list.map((d) => d.user_id));
+    const av = new Map((profiles ?? []).map((p) => [p.id, p.avatar_url]));
+    return list.map((d) => ({
+      id: d.user_id,
+      name: `${d.first_name} ${d.last_name}`.trim(),
+      specialty: d.specialty,
+      hospital: d.hospital,
+      avatarPath: av.get(d.user_id) ?? "",
+    }));
+  });
+
+/** ผู้ใช้เริ่มแชตโดยตรงกับแพทย์ที่เลือก */
+export const startDirectDoctorChat = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: unknown) =>
+    z.object({ doctorId: z.string().uuid(), category: z.enum(["body", "mind"]) }).parse(data),
+  )
+  .handler(async ({ data, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: doc } = await supabaseAdmin
+      .from("doctor_profiles")
+      .select("first_name, last_name, status")
+      .eq("user_id", data.doctorId)
+      .maybeSingle();
+    if (!doc || doc.status !== "approved") throw new Error("ไม่พบแพทย์ท่านนี้");
+    const { data: conv, error } = await supabaseAdmin
+      .from("conversations")
+      .insert({
+        user_id: context.userId,
+        category: data.category,
+        mode: "diagnose",
+        channel: "doctor",
+        assigned_doctor_id: data.doctorId,
+        title: `ปรึกษา นพ. ${doc.first_name} ${doc.last_name}`,
+      })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+    return { id: conv.id };
+  });
