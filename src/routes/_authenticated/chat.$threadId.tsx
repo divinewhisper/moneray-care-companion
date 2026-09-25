@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { ChevronLeft, Loader2, Send, Video } from "lucide-react";
 
+import { Avatar } from "@/components/moneray/Avatar";
 import { Logo } from "@/components/moneray/Logo";
 import { PhoneShell } from "@/components/moneray/PhoneShell";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +33,20 @@ function ChatPage() {
         .maybeSingle();
       if (error) throw error;
       return data;
+    },
+  });
+
+  const { data: myAvatarPath } = useQuery({
+    queryKey: ["my-avatar"],
+    queryFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      if (!u.user) return "";
+      const { data } = await supabase
+        .from("profiles")
+        .select("avatar_url")
+        .eq("id", u.user.id)
+        .maybeSingle();
+      return data?.avatar_url ?? "";
     },
   });
 
@@ -183,16 +198,31 @@ function ChatPage() {
           {messages.map((m) => (
             <div
               key={m.id}
-              className={m.role === "user" ? "flex justify-end" : "flex justify-start"}
+              className={`flex items-end gap-2 ${m.role === "user" ? "flex-row-reverse" : ""}`}
             >
-              <div
-                className={`max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-3 text-xl ${
-                  m.role === "user"
-                    ? "bg-[var(--zone)] text-[var(--zone-foreground)]"
-                    : "bg-secondary text-foreground"
-                }`}
-              >
-                {m.content}
+              {m.role === "user" ? (
+                <Avatar path={myAvatarPath} size={40} />
+              ) : (
+                <Logo className="h-10 w-10 shrink-0 bg-white" />
+              )}
+              <div className={`max-w-[85%] ${m.role === "user" ? "text-right" : ""}`}>
+                <div
+                  className={`whitespace-pre-wrap rounded-2xl px-4 py-3 text-xl ${
+                    m.role === "user"
+                      ? "bg-[var(--zone)] text-[var(--zone-foreground)]"
+                      : "bg-secondary text-foreground"
+                  }`}
+                >
+                  {m.content}
+                </div>
+                <p className="mt-1 px-1 text-sm text-muted-foreground">
+                  {new Date(m.created_at).toLocaleString("th-TH", {
+                    day: "numeric",
+                    month: "short",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </p>
               </div>
             </div>
           ))}
