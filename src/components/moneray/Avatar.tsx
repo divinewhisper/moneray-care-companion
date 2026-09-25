@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 /** แสดงรูปโปรไฟล์จากที่เก็บไฟล์ (path) */
-export function Avatar({ path, size = 64, className = "" }: { path?: string | null; size?: number; className?: string }) {
+export function Avatar({ path, size = 64, className = "" }: { path?: string | null | undefined; size?: number | undefined; className?: string | undefined }) {
   const { data: url } = useQuery({
     queryKey: ["avatar-url", path],
     enabled: !!path,
@@ -31,7 +31,7 @@ export function Avatar({ path, size = 64, className = "" }: { path?: string | nu
 }
 
 /** รูปโปรไฟล์ของผู้ใช้ที่ล็อกอิน พร้อมปุ่มเปลี่ยนรูป */
-export function AvatarUploader({ path, size = 112 }: { path?: string | null; size?: number }) {
+export function AvatarUploader({ path, size = 112 }: { path?: string | null | undefined; size?: number }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const queryClient = useQueryClient();
@@ -42,7 +42,7 @@ export function AvatarUploader({ path, size = 112 }: { path?: string | null; siz
     setBusy(true);
     try {
       const { data: u } = await supabase.auth.getUser();
-      if (!u.user) return;
+      if (!u.user) return undefined;
       const ext = file.name.split(".").pop() || "jpg";
       const newPath = `${u.user.id}/avatar-${Date.now()}.${ext}`;
       const { error } = await supabase.storage.from("avatars").upload(newPath, file, { upsert: true });
@@ -60,6 +60,7 @@ export function AvatarUploader({ path, size = 112 }: { path?: string | null; siz
     } finally {
       setBusy(false);
     }
+    return undefined;
   }
 
   return (
