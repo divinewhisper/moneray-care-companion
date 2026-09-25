@@ -22,6 +22,8 @@ import { Logo } from "@/components/moneray/Logo";
 import { PhoneShell } from "@/components/moneray/PhoneShell";
 import { supabase } from "@/integrations/supabase/client";
 import { amIAdmin } from "@/lib/admin.functions";
+import { listApprovedDoctors, startDirectDoctorChat } from "@/lib/doctor.functions";
+import { Avatar } from "@/components/moneray/Avatar";
 import { thaiDate, thaiDateTime } from "@/lib/moneray";
 
 export const Route = createFileRoute("/_authenticated/home")({
@@ -129,10 +131,25 @@ function HomePage() {
     return () => clearInterval(id);
   }, [meds]);
 
-  const results =
-    query.trim().length > 0
-      ? DIRECTORY.filter((d) => (d.name + d.detail).toLowerCase().includes(query.trim().toLowerCase()))
-      : [];
+  const fetchDoctors = useServerFn(listApprovedDoctors);
+  const startChat = useServerFn(startDirectDoctorChat);
+  const { data: doctors = [] } = useQuery({ queryKey: ["approved-doctors"], queryFn: () => fetchDoctors() });
+  const q = query.trim().toLowerCase();
+  const doctorResults = q
+    ? doctors.filter((d) => (d.name + d.specialty + d.hospital).toLowerCase().includes(q))
+    : [];
+  const results = q
+    ? DIRECTORY.filter((d) => d.type === "article" && (d.name + d.detail).toLowerCase().includes(q))
+    : [];
+
+  async function contactDoctor(doctorId: string, category: "body" | "mind") {
+    try {
+      const { id } = await startChat({ data: { doctorId, category } });
+      navigate({ to: "/chat/$threadId", params: { threadId: id } });
+    } catch {
+      toast.error("เริ่มการสนทนาไม่สำเร็จ");
+    }
+  }
 
   const showName = profile?.show_name !== false;
   const showContact = profile?.show_contact !== false;
@@ -151,6 +168,7 @@ function HomePage() {
       <header className="bg-topbar px-5 pt-6 pb-7 text-topbar-foreground">
         <div className="flex items-center justify-between gap-3">
           <Link to="/account" className="flex min-w-0 flex-1 items-center gap-3">
+            <Avatar path={profile?.avatar_url} size={56} className="border-2 border-white" />
             <div className="min-w-0">
               <p className="text-lg opacity-80">สวัสดี</p>
               <p className="truncate text-3xl font-bold">
@@ -183,8 +201,38 @@ function HomePage() {
         </div>
       </header>
 
-      {results.length > 0 ? (
+      {q ? (
         <section className="mx-5 -mt-3 rounded-2xl border-2 border-input bg-card p-3 shadow-sm">
+          {doctorResults.length === 0 && results.length === 0 ? (
+            <p className="px-2 py-3 text-xl text-muted-foreground">ไม่พบแพทย์หรือบทความที่ค้นหา</p>
+          ) : null}
+          {doctorResults.map((d) => (
+            <div key={d.id} className="border-b border-border px-2 py-3 last:border-0">
+              <div className="flex items-center gap-3">
+                <Avatar path={d.avatarPath} size={56} />
+                <div className="min-w-0">
+                  <p className="text-xl font-bold">นพ. {d.name}</p>
+                  <p className="text-lg text-muted-foreground">
+                    {d.specialty} • {d.hospital}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => contactDoctor(d.id, "body")}
+                  className="rounded-xl bg-body px-3 py-3 text-lg font-bold text-body-foreground"
+                >
+                  ปรึกษาสุขภาพกาย
+                </button>
+                <button
+                  onClick={() => contactDoctor(d.id, "mind")}
+                  className="rounded-xl bg-mind px-3 py-3 text-lg font-bold text-mind-foreground"
+                >
+                  ปรึกษาสุขภาพจิต
+                </button>
+              </div>
+            </div>
+          ))}
           {results.map((r) => (
             <div key={r.name} className="border-b border-border px-2 py-3 last:border-0">
               <p className="text-xl font-bold">{r.name}</p>

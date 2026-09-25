@@ -6,6 +6,7 @@ import { Eye, EyeOff, LogOut } from "lucide-react";
 
 import { PhoneShell, ZoneHeader } from "@/components/moneray/PhoneShell";
 import { supabase } from "@/integrations/supabase/client";
+import { AvatarUploader } from "@/components/moneray/Avatar";
 
 export const Route = createFileRoute("/_authenticated/account")({
   component: AccountPage,
@@ -79,6 +80,7 @@ function AccountPage() {
     <PhoneShell className="zone-body-followup">
       <ZoneHeader title="ข้อมูลบัญชี" subtitle="ดูและแก้ไขข้อมูลติดต่อของคุณ" backTo="/home" />
       <div className="space-y-5 px-5 pt-6">
+        <AvatarUploader path={profile?.avatar_url} />
         <div className="flex items-center justify-between rounded-2xl bg-secondary p-4">
           <span className="text-xl font-semibold">แสดงชื่อบนหน้าแรก</span>
           <button onClick={() => toggle("show_name")} className="rounded-xl bg-white p-3">
