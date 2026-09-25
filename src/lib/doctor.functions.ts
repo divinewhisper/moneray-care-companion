@@ -165,7 +165,7 @@ export const getPatientThread = createServerFn({ method: "GET" })
       throw new Error("การสนทนานี้มีแพทย์ท่านอื่นดูแลอยู่แล้ว");
 
 
-    const [{ data: messages }, { data: profile }] = await Promise.all([
+    const [{ data: messages }, { data: profile }, { data: doctorProfile }] = await Promise.all([
       supabaseAdmin
         .from("messages")
         .select("id, role, content, created_at")
@@ -173,8 +173,13 @@ export const getPatientThread = createServerFn({ method: "GET" })
         .order("created_at", { ascending: true }),
       supabaseAdmin
         .from("profiles")
-        .select("first_name, last_name, phone")
+        .select("first_name, last_name, phone, avatar_url")
         .eq("id", conversation.user_id)
+        .maybeSingle(),
+      supabaseAdmin
+        .from("profiles")
+        .select("avatar_url")
+        .eq("id", context.userId)
         .maybeSingle(),
     ]);
 
@@ -188,6 +193,8 @@ export const getPatientThread = createServerFn({ method: "GET" })
         ? `${profile.first_name} ${profile.last_name}`.trim() || "ผู้ใช้"
         : "ผู้ใช้",
       patientPhone: profile?.phone ?? "",
+      patientAvatarPath: profile?.avatar_url ?? "",
+      doctorAvatarPath: doctorProfile?.avatar_url ?? "",
       messages: messages ?? [],
     };
   });
