@@ -96,6 +96,11 @@ function ChatPage() {
     await queryClient.invalidateQueries({ queryKey: ["messages", threadId] });
 
     if (!isBot) {
+      // แจ้งเตือนอัตโนมัติเฉพาะข้อความแรกของบทสนทนาเท่านั้น
+      if (messages.length > 0) {
+        setPending(false);
+        return;
+      }
       await supabase.from("messages").insert({
         conversation_id: threadId,
         user_id: user.id,
