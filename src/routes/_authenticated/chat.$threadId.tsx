@@ -8,7 +8,7 @@ import { Avatar } from "@/components/moneray/Avatar";
 import { Logo } from "@/components/moneray/Logo";
 import { PhoneShell } from "@/components/moneray/PhoneShell";
 import { supabase } from "@/integrations/supabase/client";
-import { categoryLabel, modeLabel, zoneFor, type Category, type Mode } from "@/lib/moneray";
+import { categoryLabel, modeLabel, splitDoctorSender, zoneFor, type Category, type Mode } from "@/lib/moneray";
 
 export const Route = createFileRoute("/_authenticated/chat/$threadId")({
   component: ChatPage,

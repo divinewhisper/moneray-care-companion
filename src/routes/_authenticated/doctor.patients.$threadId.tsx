@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Avatar } from "@/components/moneray/Avatar";
 import { PhoneShell, ZoneHeader } from "@/components/moneray/PhoneShell";
 import { getPatientThread, markPatientThreadRead, replyToPatient } from "@/lib/doctor.functions";
+import { splitDoctorSender } from "@/lib/moneray";
 
 export const Route = createFileRoute("/_authenticated/doctor/patients/$threadId")({
   component: DoctorThread,
