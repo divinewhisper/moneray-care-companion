@@ -168,7 +168,7 @@ export const getPatientThread = createServerFn({ method: "GET" })
     const [{ data: messages }, { data: profile }, { data: doctorProfile }] = await Promise.all([
       supabaseAdmin
         .from("messages")
-        .select("id, role, content, created_at")
+        .select("id, role, content, created_at, sender_name")
         .eq("conversation_id", conversation.id)
         .order("created_at", { ascending: true }),
       supabaseAdmin
@@ -178,7 +178,7 @@ export const getPatientThread = createServerFn({ method: "GET" })
         .maybeSingle(),
       supabaseAdmin
         .from("profiles")
-        .select("avatar_url")
+        .select("avatar_url, first_name, last_name")
         .eq("id", context.userId)
         .maybeSingle(),
     ]);
@@ -194,6 +194,7 @@ export const getPatientThread = createServerFn({ method: "GET" })
         : "ผู้ใช้",
       patientPhone: profile?.phone ?? "",
       patientAvatarPath: profile?.avatar_url ?? "",
+      doctorName: doctorProfile ? `นพ. ${doctorProfile.first_name} ${doctorProfile.last_name}` : "",
       doctorAvatarPath: doctorProfile?.avatar_url ?? "",
       messages: messages ?? [],
     };
@@ -238,7 +239,8 @@ export const replyToPatient = createServerFn({ method: "POST" })
       conversation_id: conversation.id,
       user_id: conversation.user_id,
       role: "assistant",
-      content: `นพ. ${doctor.first_name} ${doctor.last_name}: ${data.content}`,
+      content: data.content,
+      sender_name: `นพ. ${doctor.first_name} ${doctor.last_name}`,
     });
     if (insertError) throw new Error(insertError.message);
 
