@@ -195,37 +195,45 @@ function ChatPage() {
                 : "พิมพ์อาการของคุณเพื่อส่งถึงแพทย์ หรือกดวิดีโอคอลเพื่อพูดคุย"}
             </p>
           ) : null}
-          {messages.map((m) => (
-            <div
-              key={m.id}
-              className={`flex items-end gap-2 ${m.role === "user" ? "flex-row-reverse" : ""}`}
-            >
-              {m.role === "user" ? (
-                <Avatar path={myAvatarPath} size={40} />
-              ) : (
-                <Logo className="h-10 w-10 shrink-0 bg-white" />
-              )}
-              <div className={`max-w-[85%] ${m.role === "user" ? "text-right" : ""}`}>
-                <div
-                  className={`whitespace-pre-wrap rounded-2xl px-4 py-3 text-xl ${
-                    m.role === "user"
-                      ? "bg-[var(--zone)] text-[var(--zone-foreground)]"
-                      : "bg-secondary text-foreground"
-                  }`}
-                >
-                  {m.content}
+          {messages.map((m) => {
+            const parsed = m.role === "assistant" ? splitDoctorSender(m.content) : { name: "", content: m.content };
+            const senderName = m.sender_name || parsed.name;
+            const body = m.sender_name ? m.content : parsed.content;
+            return (
+              <div
+                key={m.id}
+                className={`flex items-end gap-2 ${m.role === "user" ? "flex-row-reverse" : ""}`}
+              >
+                {m.role === "user" ? (
+                  <Avatar path={myAvatarPath} size={40} />
+                ) : (
+                  <Logo className="h-10 w-10 shrink-0 bg-white" />
+                )}
+                <div className={`max-w-[85%] ${m.role === "user" ? "text-right" : ""}`}>
+                  {senderName ? (
+                    <p className="mb-1 text-lg font-semibold text-muted-foreground">{senderName}</p>
+                  ) : null}
+                  <div
+                    className={`whitespace-pre-wrap rounded-2xl px-4 py-3 text-xl ${
+                      m.role === "user"
+                        ? "bg-[var(--zone)] text-[var(--zone-foreground)]"
+                        : "bg-secondary text-foreground"
+                    }`}
+                  >
+                    {body}
+                  </div>
+                  <p className="mt-1 px-1 text-sm text-muted-foreground">
+                    {new Date(m.created_at).toLocaleString("th-TH", {
+                      day: "numeric",
+                      month: "short",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
                 </div>
-                <p className="mt-1 px-1 text-sm text-muted-foreground">
-                  {new Date(m.created_at).toLocaleString("th-TH", {
-                    day: "numeric",
-                    month: "short",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </p>
               </div>
-            </div>
-          ))}
+            );
+          })}
           {pending ? (
             <div className="flex items-center gap-2 text-xl text-muted-foreground">
               <Loader2 className="size-6 animate-spin" /> กำลังพิมพ์...
