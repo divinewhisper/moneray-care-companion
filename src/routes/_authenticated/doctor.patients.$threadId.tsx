@@ -5,6 +5,7 @@ import { Loader2, Send } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
+import { Avatar } from "@/components/moneray/Avatar";
 import { PhoneShell, ZoneHeader } from "@/components/moneray/PhoneShell";
 import { getPatientThread, markPatientThreadRead, replyToPatient } from "@/lib/doctor.functions";
 
@@ -70,13 +71,31 @@ function DoctorThread() {
             (data?.messages ?? []).map((m) => (
               <div
                 key={m.id}
-                className={`max-w-[85%] rounded-2xl px-4 py-3 text-xl ${
-                  m.role === "user"
-                    ? "bg-secondary"
-                    : "ml-auto bg-[var(--zone)] text-[var(--zone-foreground)]"
-                }`}
+                className={`flex items-end gap-2 ${m.role === "user" ? "" : "flex-row-reverse"}`}
               >
-                {m.content}
+                <Avatar
+                  path={m.role === "user" ? data?.patientAvatarPath : data?.doctorAvatarPath}
+                  size={40}
+                />
+                <div className={`max-w-[85%] ${m.role === "user" ? "" : "text-right"}`}>
+                  <div
+                    className={`whitespace-pre-wrap rounded-2xl px-4 py-3 text-xl ${
+                      m.role === "user"
+                        ? "bg-secondary"
+                        : "bg-[var(--zone)] text-[var(--zone-foreground)]"
+                    }`}
+                  >
+                    {m.content}
+                  </div>
+                  <p className="mt-1 px-1 text-sm text-muted-foreground">
+                    {new Date(m.created_at).toLocaleString("th-TH", {
+                      day: "numeric",
+                      month: "short",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                </div>
               </div>
             ))
           )}
