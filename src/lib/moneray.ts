@@ -44,3 +44,10 @@ export const thaiDate = (iso: string) =>
     month: "long",
     year: "numeric",
   });
+
+/** แยกชื่อแพทย์ออกจากเนื้อหาข้อความเก่า (รูปแบบ "นพ. ชื่อ นามสกุล: ข้อความ") */
+export function splitDoctorSender(content: string): { name: string; content: string } {
+  const match = content.match(/^นพ\.[^\n:]*:\s/);
+  if (!match) return { name: "", content };
+  return { name: match[0].replace(/:\s$/, "").trim(), content: content.slice(match[0].length) };
+}
